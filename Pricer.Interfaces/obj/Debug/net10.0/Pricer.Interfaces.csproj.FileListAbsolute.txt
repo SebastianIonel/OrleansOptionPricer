@@ -1,0 +1,13 @@
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\bin\Debug\net10.0\Pricer.Interfaces.deps.json
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\bin\Debug\net10.0\Pricer.Interfaces.dll
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\bin\Debug\net10.0\Pricer.Interfaces.pdb
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.csproj.AssemblyReference.cache
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.AssemblyInfoInputs.cache
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.AssemblyInfo.cs
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.csproj.CoreCompileInputs.cache
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.sourcelink.json
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.dll
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\refint\Pricer.Interfaces.dll
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\Pricer.Interfaces.pdb
+C:\Users\ionel\Desktop\OrleansOptionPricer\Pricer.Interfaces\obj\Debug\net10.0\ref\Pricer.Interfaces.dll
