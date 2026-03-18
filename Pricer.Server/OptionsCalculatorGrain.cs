@@ -7,7 +7,15 @@ namespace Pricer.Server
 {
     public class OptionsCalculatorGrain : Grain, IOptionsCalculatorGrain
     {
-        public Task<double> CalculateBlackScholes(
+        private readonly IPersistentState<OptionState> _state;
+
+        public OptionsCalculatorGrain(
+        [PersistentState("OptionState", "PricerStorage")] IPersistentState<OptionState> state)
+        {
+            _state = state;
+        }
+
+        public async Task<double> CalculateBlackScholes(
             double spotPrice,
             double strikePrice,
             double timeToExpiration,
@@ -22,7 +30,14 @@ namespace Pricer.Server
             double price = spotPrice * CumulativeNormalDistribution(d1) -
                            strikePrice * Math.Exp(-riskFreeRate * timeToExpiration) * CumulativeNormalDistribution(d2);
 
-            return Task.FromResult(price);
+            _state.State.LastCalculatedPrice = price;
+            _state.State.Timestamp = DateTime.UtcNow;
+            _state.State.Name = this.GetPrimaryKeyString();
+
+            await _state.WriteStateAsync();
+            Console.WriteLine($"[Silo] Calculated price for {this.GetPrimaryKeyString()}: {price}");
+
+            return price;
         }
         private static double CumulativeNormalDistribution(double x)
         {

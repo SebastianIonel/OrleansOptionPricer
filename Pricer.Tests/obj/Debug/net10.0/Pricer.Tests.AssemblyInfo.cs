@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pricer.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2f19e33e1802783460bd939bf28281311851768a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0f4a5ef48b61676bb30575bde82532e64c6e9c2")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pricer.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pricer.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
