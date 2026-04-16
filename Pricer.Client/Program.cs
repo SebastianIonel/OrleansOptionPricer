@@ -6,10 +6,17 @@ using Pricer.Interfaces;
 Console.WriteLine("=== Pricer Orleans Client ===");
 Console.WriteLine("Connecting to cluster...");
 
+const string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PricerStorage;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
+const string invariant = "Microsoft.Data.SqlClient";
+
 var builder = Host.CreateDefaultBuilder(args)
     .UseOrleansClient(client =>
     {
-        client.UseLocalhostClustering();
+       client.UseAdoNetClustering(options =>
+        {
+            options.Invariant = invariant;
+            options.ConnectionString = connectionString;
+        });
     })
     .ConfigureLogging(logging => logging.AddConsole());
 
@@ -18,29 +25,31 @@ await host.StartAsync();
 
 var client = host.Services.GetRequiredService<IClusterClient>();
 
-var calculator = client.GetGrain<IOptionsCalculatorGrain>("AAPL");
 
-try
+string[] tickers = { "AAPL", "MSFT", "GOOG", "TSLA", "BTC", "ETH", "SOL", "META" };
+Random rnd = new();
+
+Console.WriteLine($"Found {tickers.Length} tickers to calculate...");
+
+foreach (var ticker in tickers)
 {
-    double spot = 100.0;     // Spot Price
-    double strike = 105.0;   // Strike Price
-    double time = 1.0;       // Time to Expiry (1 year)
-    double rate = 0.05;      // Risk-free rate (5%)
-    double vol = 0.2;        // Volatility (20%)
+    var calculator = client.GetGrain<IOptionsCalculatorGrain>(ticker);
 
-    Console.WriteLine($"\nRequesting calculation for Spot: {spot}, Strike: {strike}...");
+    double spot = 100.0 + rnd.Next(1, 50);
+    double strike = spot + rnd.Next(-5, 5);
 
-    double result = await calculator.CalculateBlackScholes(spot, strike, time, rate, vol);
-
-    Console.WriteLine("-------------------------------------");
-    Console.WriteLine($"RESULT (Call Option Price): {result:F4}");
-    Console.WriteLine("-------------------------------------\n");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"An error occurred during calculation: {ex.Message}");
+    try
+    {
+        double result = await calculator.CalculateBlackScholes(spot, strike, 1.0, 0.05, 0.2);
+        Console.WriteLine($"[{ticker}] Price: {result:F4}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error for {ticker}: {ex.Message}");
+    }
 }
 
+Console.WriteLine("\nCalculations complete. Check your Dashboards (http://localhost:8080 and 8081)");
 Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
 

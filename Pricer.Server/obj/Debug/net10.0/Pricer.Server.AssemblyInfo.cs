@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pricer.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0f4a5ef48b61676bb30575bde82532e64c6e9c2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dde217737d32cecf141e0e5d2cfab0e71185c77e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pricer.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pricer.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
