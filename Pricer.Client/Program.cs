@@ -26,7 +26,7 @@ await host.StartAsync();
 var client = host.Services.GetRequiredService<IClusterClient>();
 
 
-string[] tickers = { "AAPL", "MSFT", "GOOG", "TSLA", "BTC", "ETH", "SOL", "META" };
+string[] tickers = { "AAPL", "MSFT", "GOOG", "TSLA", "BTC", "ETH", "SOL", "META", "NVDA", "ORCL" };
 Random rnd = new();
 
 Console.WriteLine($"Found {tickers.Length} tickers to calculate...");
@@ -49,8 +49,7 @@ foreach (var ticker in tickers)
     }
 }
 
-Console.WriteLine("\nCalculations complete. Check your Dashboards (http://localhost:8080 and 8081)");
-Console.WriteLine("Press any key to exit...");
+Console.WriteLine("\nCalculations complete");
 Console.ReadKey();
 
 await host.StopAsync();
