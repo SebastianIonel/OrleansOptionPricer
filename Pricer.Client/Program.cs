@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Pricer.Interfaces;
@@ -13,7 +14,12 @@ namespace Pricer.Client
             ConfigureSerilog();
             const string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PricerStorage;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             const string invariant = "Microsoft.Data.SqlClient";
-            var builder = Host.CreateDefaultBuilder(args).UseSerilog()
+            var builder = Host.CreateDefaultBuilder(args)
+                .UseSerilog()
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
+                })
                 .UseOrleansClient(client =>
                 {
                     client.UseAdoNetClustering(options =>
@@ -26,35 +32,13 @@ namespace Pricer.Client
             await host.StartAsync();
             var client = host.Services.GetRequiredService<IClusterClient>();
 
-
+            var mediator = host.Services.GetRequiredService<IMediator>();
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
             logger.LogInformation("Connecting to cluster...");
 
 
-            string[] tickers = { "AAPL", "MSFT", "GOOG", "TSLA", "BTC", "ETH", "SOL", "META", "NVDA", "ORCL" };
-            Random rnd = new();
+            await mediator.Send(new CalculateOptionsCommand(client));
 
-            logger.LogInformation($"Found {tickers.Length} tickers to calculate...");
-
-            foreach (var ticker in tickers)
-            {
-                var calculator = client.GetGrain<IOptionsCalculatorGrain>(ticker);
-
-                double spot = 100.0 + rnd.Next(1, 50);
-                double strike = spot + rnd.Next(-5, 5);
-
-                try
-                {
-                    double result = await calculator.CalculateBlackScholes(spot, strike, 1.0, 0.05, 0.2);
-                    logger.LogInformation($"[{ticker}] Price: {result:F4}");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError($"Error for {ticker}: {ex.Message}");
-                }
-            }
-
-            logger.LogInformation("\nCalculations complete");
             Console.ReadKey();
 
             await Log.CloseAndFlushAsync();
