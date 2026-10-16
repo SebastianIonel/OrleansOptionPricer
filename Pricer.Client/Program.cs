@@ -10,12 +10,10 @@ namespace Pricer.Client
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("=== Pricer Orleans Client ===");
-            Console.WriteLine("Connecting to cluster...");
-            var logger = ConfigLogger<Program>();
+            ConfigureSerilog();
             const string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PricerStorage;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;";
             const string invariant = "Microsoft.Data.SqlClient";
-            var builder = Host.CreateDefaultBuilder(args)
+            var builder = Host.CreateDefaultBuilder(args).UseSerilog()
                 .UseOrleansClient(client =>
                 {
                     client.UseAdoNetClustering(options =>
@@ -23,17 +21,20 @@ namespace Pricer.Client
                         options.Invariant = invariant;
                         options.ConnectionString = connectionString;
                     });
-                })
-                .ConfigureLogging(logging => logging.AddConsole());
+                });
             using var host = builder.Build();
             await host.StartAsync();
             var client = host.Services.GetRequiredService<IClusterClient>();
 
 
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Connecting to cluster...");
+
+
             string[] tickers = { "AAPL", "MSFT", "GOOG", "TSLA", "BTC", "ETH", "SOL", "META", "NVDA", "ORCL" };
             Random rnd = new();
 
-            Console.WriteLine($"Found {tickers.Length} tickers to calculate...");
+            logger.LogInformation($"Found {tickers.Length} tickers to calculate...");
 
             foreach (var ticker in tickers)
             {
@@ -45,29 +46,28 @@ namespace Pricer.Client
                 try
                 {
                     double result = await calculator.CalculateBlackScholes(spot, strike, 1.0, 0.05, 0.2);
-                    Console.WriteLine($"[{ticker}] Price: {result:F4}");
+                    logger.LogInformation($"[{ticker}] Price: {result:F4}");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error for {ticker}: {ex.Message}");
+                    logger.LogError($"Error for {ticker}: {ex.Message}");
                 }
             }
 
-            Console.WriteLine("\nCalculations complete");
+            logger.LogInformation("\nCalculations complete");
             Console.ReadKey();
 
+            await Log.CloseAndFlushAsync();
             await host.StopAsync();
         }
 
-        private static ILogger<T> ConfigLogger<T>()
+        private static void ConfigureSerilog()
         {
-            var serilogLogger = new LoggerConfiguration()
+            Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} - {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} - {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
-            return new Serilog.Extensions.Logging.SerilogLoggerFactory(serilogLogger)
-                .CreateLogger<T>();
         }
 
     }
