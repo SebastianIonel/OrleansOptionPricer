@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Pricer.Interfaces;
 using Serilog;
+using Serilog.Events;
 
 namespace Pricer.Client
 {
@@ -48,7 +49,9 @@ namespace Pricer.Client
         private static void ConfigureSerilog()
         {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
+                .MinimumLevel.Information()  
+                .MinimumLevel.Override("Pricer.Server", LogEventLevel.Verbose)
+                .MinimumLevel.Override("Orleans", LogEventLevel.Warning)  
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} - {Message:lj}{NewLine}{Exception}")
                 .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} - {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();

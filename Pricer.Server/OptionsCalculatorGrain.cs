@@ -1,4 +1,6 @@
-﻿using Pricer.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using Pricer.Interfaces;
+using Serilog.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,11 +10,13 @@ namespace Pricer.Server
     public class OptionsCalculatorGrain : Grain, IOptionsCalculatorGrain
     {
         private readonly IPersistentState<OptionState> _state;
+        private readonly ILogger<OptionsCalculatorGrain> _logger;
 
         public OptionsCalculatorGrain(
-        [PersistentState("OptionState", "PricerStorage")] IPersistentState<OptionState> state)
+        [PersistentState("OptionState", "PricerStorage")] IPersistentState<OptionState> state, ILogger<OptionsCalculatorGrain> logger)
         {
             _state = state;
+            _logger = logger;
         }
 
         public async Task<double> CalculateBlackScholes(
@@ -35,7 +39,7 @@ namespace Pricer.Server
             _state.State.Name = this.GetPrimaryKeyString();
 
             await _state.WriteStateAsync();
-            Console.WriteLine($"[Silo] Calculated price for {this.GetPrimaryKeyString()}: {price}");
+            _logger.LogInformation("Calculated price for {GrainId}: {Price}", this.GetPrimaryKeyString(), price);
 
             return price;
         }
